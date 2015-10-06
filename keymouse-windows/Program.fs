@@ -1,6 +1,8 @@
 ﻿open Gma.System.MouseKeyHook
 open System.Windows.Forms
 open System.Drawing
+open System.Runtime.InteropServices
+open WindowsInput
 
 let mutable enabled = true
 let mutable mousePos =
@@ -10,6 +12,8 @@ let mutable mousePos =
 
 let onMouseMove (e: MouseEventArgs) =
     mousePos <- e.Location
+
+let mouse = new MouseSimulator(new InputSimulator())
 
 let moveMouse f =
     if enabled
@@ -22,13 +26,15 @@ let moveMouse f =
         Cursor.Position <- mousePos
 
 let onKeyDown (e: KeyEventArgs) =
-    if enabled && List.exists (fun key -> key = e.KeyCode) [Keys.W; Keys.A; Keys.S; Keys.D]
+    if enabled && List.exists (fun key -> key = e.KeyCode) [Keys.W; Keys.A; Keys.S; Keys.D; Keys.OemSemicolon; Keys.OemQuotes]
     then
         match e.KeyCode with
         | Keys.W -> moveMouse (fun x y -> (x, y - 5))
         | Keys.A -> moveMouse (fun x y -> (x - 5, y))
         | Keys.S -> moveMouse (fun x y -> (x, y + 5))
         | Keys.D -> moveMouse (fun x y -> (x + 5, y))
+        | Keys.OemSemicolon -> mouse.LeftButtonClick() |> ignore
+        | Keys.OemQuotes -> mouse.RightButtonClick() |> ignore
 
         e.SuppressKeyPress <- true
 
