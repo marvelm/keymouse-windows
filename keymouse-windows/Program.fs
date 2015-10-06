@@ -11,11 +11,9 @@ let onMouseMove (e: MouseEventArgs) =
     mousePos <- e.Location
 
 let moveMouse f =
-    printfn "moveMouse"
     let (x, y) = f mousePos.X mousePos.Y
     let x' = if x < 0 then 0 else x
     let y' = if y < 0 then 0 else y
-    printfn "moving mouse to %A, %A" x' y'
 
     mousePos <- new Point(x', y')
     Cursor.Position <- mousePos
@@ -28,7 +26,6 @@ let onKeyDown (e: KeyEventArgs) =
         | Keys.A -> moveMouse (fun x y -> (x - 5, y))
         | Keys.S -> moveMouse (fun x y -> (x, y + 5))
         | Keys.D -> moveMouse (fun x y -> (x + 5, y))
-        | _ -> printfn "unhandled"
 
         e.SuppressKeyPress <- true
     else if e.KeyCode = Keys.OemBackslash
@@ -41,7 +38,6 @@ let main argv =
     let hook = Hook.GlobalEvents();
     hook.MouseMove.Add onMouseMove
     hook.KeyDown.Add onKeyDown
-
 
     Application.Run()
     0 // return an integer exit code
