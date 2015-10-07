@@ -27,18 +27,25 @@ let moveMouse f =
 
 let contains x elements = List.exists (fun el -> x = el) elements
 
-let onKeyDown (e: KeyEventArgs) =
-    if enabled && contains e.KeyCode [Keys.W; Keys.A; Keys.S; Keys.D; Keys.OemSemicolon; Keys.OemQuotes]
-    then
-        match e.KeyCode with
-        | Keys.W -> moveMouse (fun x y -> (x, y - 5))
-        | Keys.A -> moveMouse (fun x y -> (x - 5, y))
-        | Keys.S -> moveMouse (fun x y -> (x, y + 5))
-        | Keys.D -> moveMouse (fun x y -> (x + 5, y))
-        | Keys.OemSemicolon -> mouse.LeftButtonClick() |> ignore
-        | Keys.OemQuotes -> mouse.RightButtonClick() |> ignore
+let wasd = [Keys.W; Keys.A; Keys.S; Keys.D]
+let clickKeys = [Keys.OemSemicolon; Keys.OemQuotes]
+let hotkeys = wasd @ clickKeys
 
-        e.SuppressKeyPress <- true
+let onKeyDown (e: KeyEventArgs) =
+    if enabled && contains e.KeyCode hotkeys
+    then
+        if (contains e.KeyCode wasd) && (e.Modifiers <> Keys.None) then
+            ()
+        else 
+            match e.KeyCode with
+            | Keys.W -> moveMouse (fun x y -> (x, y - 5))
+            | Keys.A -> moveMouse (fun x y -> (x - 5, y))
+            | Keys.S -> moveMouse (fun x y -> (x, y + 5))
+            | Keys.D -> moveMouse (fun x y -> (x + 5, y))
+            | Keys.OemSemicolon -> mouse.LeftButtonClick() |> ignore
+            | Keys.OemQuotes -> mouse.RightButtonClick() |> ignore
+
+            e.SuppressKeyPress <- true
 
     else if contains e.KeyCode [Keys.OemPipe; Keys.OemBackslash]
     then
