@@ -7,7 +7,7 @@ open WindowsInput
 let mutable enabled = true
 let mutable mousePos =
     let p = new Point(0, 0);
-    Cursor.Position <- p 
+    Cursor.Position <- p
     p
 
 let onMouseMove (e: MouseEventArgs) =
@@ -25,8 +25,10 @@ let moveMouse f =
         mousePos <- new Point(x', y')
         Cursor.Position <- mousePos
 
+let contains x elements = List.exists (fun el -> x = el) elements
+
 let onKeyDown (e: KeyEventArgs) =
-    if enabled && List.exists (fun key -> key = e.KeyCode) [Keys.W; Keys.A; Keys.S; Keys.D; Keys.OemSemicolon; Keys.OemQuotes]
+    if enabled && contains e.KeyCode [Keys.W; Keys.A; Keys.S; Keys.D; Keys.OemSemicolon; Keys.OemQuotes]
     then
         match e.KeyCode with
         | Keys.W -> moveMouse (fun x y -> (x, y - 5))
@@ -38,14 +40,14 @@ let onKeyDown (e: KeyEventArgs) =
 
         e.SuppressKeyPress <- true
 
-    else if e.KeyCode = Keys.OemPipe || e.KeyCode = Keys.OemBackslash
+    else if contains e.KeyCode [Keys.OemPipe; Keys.OemBackslash]
     then
        if enabled then e.SuppressKeyPress <- true
        enabled <- not enabled
        printfn "Enabled: %A" enabled
 
 [<EntryPoint>]
-let main argv = 
+let main argv =
     let hook = Hook.GlobalEvents();
     hook.MouseMove.Add onMouseMove
     hook.KeyDown.Add onKeyDown
