@@ -8,8 +8,8 @@ It is difficult to implement this feature in a platform agnostic way
 with regard to OSX and seemingly impossible for X.
 
 There is also a significant reduction in memory usage because it runs
-on .NET and the lack of a Clojure jar. I have not yet benchmarked
-the application
+on .NET and does not need to load the Clojure jar. I have not yet benchmarked
+the application.
 
 ### Usage
 
