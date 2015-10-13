@@ -51,6 +51,7 @@ let onKeyDown (e: KeyEventArgs) =
     then
        if enabled then e.SuppressKeyPress <- true
        enabled <- not enabled
+       System.Console.Clear()
        printfn "Enabled: %A" enabled
 
 [<EntryPoint>]
@@ -59,5 +60,5 @@ let main argv =
     hook.MouseMove.Add onMouseMove
     hook.KeyDown.Add onKeyDown
 
-    Application.Run()
+    Application.Run();
     0 // return an integer exit code
