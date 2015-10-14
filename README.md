@@ -17,7 +17,6 @@ Use the "WASD" keys to move the mouse,
 
 "\" to toggle the application,
 
-";" to left click,
+";" to left click, "'" (single quote) to right click,
 
-and "'" (single quote) to right click.
-
+'f' to scroll up and 'v' to scroll down.
