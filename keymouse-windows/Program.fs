@@ -29,7 +29,8 @@ let contains x elements = List.exists (fun el -> x = el) elements
 
 let wasd = [Keys.W; Keys.A; Keys.S; Keys.D]
 let clickKeys = [Keys.OemSemicolon; Keys.OemQuotes]
-let hotkeys = wasd @ clickKeys
+let scrollKeys = [Keys.F; Keys.V]
+let hotkeys = wasd @ clickKeys @ scrollKeys
 
 let onKeyDown (e: KeyEventArgs) =
     if enabled && contains e.KeyCode hotkeys
@@ -44,6 +45,8 @@ let onKeyDown (e: KeyEventArgs) =
             | Keys.D -> moveMouse (fun x y -> (x + 5, y))
             | Keys.OemSemicolon -> mouse.LeftButtonClick() |> ignore
             | Keys.OemQuotes -> mouse.RightButtonClick() |> ignore
+            | Keys.F -> mouse.VerticalScroll(1) |> ignore
+            | Keys.V -> mouse.VerticalScroll(-1) |> ignore
 
             e.SuppressKeyPress <- true
 
