@@ -4,6 +4,30 @@ open System.Drawing
 open System.Runtime.InteropServices
 open WindowsInput
 
+module Native =
+    open System
+
+    [<DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)>]
+    extern IntPtr GetDesktopWindow();
+
+    [<DllImport("user32.dll", CharSet = CharSet.Auto)>]
+    extern IntPtr FindWindow([<MarshalAs(UnmanagedType.LPTStr)>] string lpClassName,[<MarshalAs(UnmanagedType.LPTStr)>] string lpWindowName);
+
+    [<DllImport("user32.dll")>]
+    extern IntPtr SetParent(
+          IntPtr hWndChild,      // handle to window
+          IntPtr hWndNewParent   // new parent window
+    );
+
+    [<DllImport("user32.dll", SetLastError = true)>]
+    extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+    [<DllImport("user32.dll", SetLastError = true)>]
+    extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+    let GWL_EXSTYLE: int = -20;
+    let WS_EX_TRANSPARENT: int = 0x20; 
+
 let mutable enabled = true
 let mutable mousePos =
     let p = new Point(0, 0);
