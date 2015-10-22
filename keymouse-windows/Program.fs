@@ -6,26 +6,37 @@ open WindowsInput
 
 module Native =
 
-    [<DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)>]
-    extern nativeint GetDesktopWindow();
+    [<DllImport("kernel32.dll", ExactSpelling=true)>]
+    extern nativeint GetConsoleWindow()
 
     [<DllImport("user32.dll", CharSet = CharSet.Auto)>]
-    extern nativeint FindWindow([<MarshalAs(UnmanagedType.LPTStr)>] string lpClassName,[<MarshalAs(UnmanagedType.LPTStr)>] string lpWindowName);
+    extern [<MarshalAs(UnmanagedType.Bool)>] bool SetForegroundWindow(nativeint hWnd)
 
     [<DllImport("user32.dll")>]
-    extern nativeint SetParent(
-          nativeint hWndChild,      // handle to window
-          nativeint hWndNewParent   // new parent window
-    );
+    extern nativeint GetForegroundWindow();
 
-    [<DllImport("user32.dll", SetLastError = true)>]
-    extern int GetWindowLong(nativeint hWnd, int nIndex);
+    [<DllImport("user32.dll")>]
+    extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
-    [<DllImport("user32.dll", SetLastError = true)>]
-    extern int SetWindowLong(nativeint hWnd, int nIndex, int dwNewLong);
+    [<DllImport("user32.dll")>]
+    extern [<MarshalAs(UnmanagedType.Bool)>] bool ShowWindow(nativeint hWnd, int nCmdShow);
 
-    let GWL_EXSTYLE: int = -20;
-    let WS_EX_TRANSPARENT: int = 0x20;
+    let SW_RESTORE = 9
+    let SW_SHOW = 5
+    let SW_SHOWNORMAL = 1
+
+let showConsole() =
+    let currentWindow = Native.GetForegroundWindow()
+    let consoleHwnd = Native.GetConsoleWindow()
+
+    Native.ShowWindow(consoleHwnd, Native.SW_RESTORE) |> ignore
+    Native.keybd_event(0uy, 0uy, 0, 0);
+    Native.SetForegroundWindow(consoleHwnd) |> ignore
+
+    new System.Threading.Timer(
+        (fun obj ->
+            Native.SetForegroundWindow(currentWindow) |> ignore),
+        null, 1000, System.Threading.Timeout.Infinite) |> ignore
 
 let mutable enabled = true
 let mutable mousePos =
@@ -60,7 +71,7 @@ let onKeyDown (e: KeyEventArgs) =
     then
         if (contains e.KeyCode wasd) && (e.Modifiers <> Keys.None) then
             ()
-        else 
+        else
             match e.KeyCode with
             | Keys.W -> moveMouse (fun x y -> (x, y - 5))
             | Keys.A -> moveMouse (fun x y -> (x - 5, y))
@@ -75,6 +86,7 @@ let onKeyDown (e: KeyEventArgs) =
 
     else if contains e.KeyCode [Keys.OemPipe; Keys.OemBackslash]
     then
+       showConsole()
        if enabled then e.SuppressKeyPress <- true
        enabled <- not enabled
        System.Console.Clear()
